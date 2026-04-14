@@ -31,8 +31,8 @@ dev = ["pytest", "responses", "black", "mypy"]
 [project.urls]
 Homepage = "https://ghostnexus.net"
 Documentation = "https://ghostnexus.net/docs"
-Repository = "https://github.com/ghostnexus/ghostnexus-python"
-"Bug Tracker" = "https://github.com/ghostnexus/ghostnexus-python/issues"
+Repository = "https://github.com/Milaskinger/ghostnexus-python"
+"Bug Tracker" = "https://github.com/Milaskinger/ghostnexus-python/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]
