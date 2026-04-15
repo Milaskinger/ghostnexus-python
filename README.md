@@ -281,4 +281,5 @@ MIT — see [LICENSE](LICENSE).
 - [Dashboard](https://ghostnexus.net/dashboard) — Manage jobs & credits
 - [Integrations](https://ghostnexus.net/integrations) — GitHub Actions, Jupyter
 - [PyPI](https://pypi.org/project/ghostnexus/) — Package
+- [ghostnexus-node](https://github.com/Milaskinger/ghostnexus-node) — Provider node (share your GPU)
 - [contact@ghostnexus.net](mailto:contact@ghostnexus.net) — Support
