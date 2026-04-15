@@ -1,6 +1,6 @@
 """GhostNexus SDK data models."""
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Generator, Optional
 
 
 @dataclass
@@ -87,6 +87,64 @@ class Job:
                         logs=result.output,
                     )
                 return result
+            if time.time() - start > timeout:
+                raise TimeoutError(
+                    f"Job {self.job_id} not completed after {timeout}s"
+                )
+            time.sleep(poll_interval)
+
+    def stream_logs(
+        self,
+        timeout: int = 600,
+        poll_interval: float = 1.0,
+    ) -> Generator[str, None, None]:
+        """
+        Yield log lines in real-time as the job produces output.
+
+        Polls the status endpoint and yields new content as it appears.
+        Stops when the job completes or times out.
+
+        Args:
+            timeout: Maximum wait time in seconds (default 600s = 10 min).
+            poll_interval: Seconds between polls (default 1.0).
+
+        Yields:
+            str: New log content since the last poll.
+
+        Raises:
+            TimeoutError: If job does not complete within timeout.
+            JobFailedError: If the job failed.
+
+        Example:
+            >>> job = client.run("train.py")
+            >>> for chunk in job.stream_logs():
+            ...     print(chunk, end="", flush=True)
+        """
+        import time
+        from .exceptions import TimeoutError, JobFailedError
+
+        start = time.time()
+        last_pos = 0  # byte offset into the accumulated output
+
+        while True:
+            result = self._client.status(self.job_id)
+
+            # Yield any new output
+            if result.output and len(result.output) > last_pos:
+                new_content = result.output[last_pos:]
+                last_pos = len(result.output)
+                yield new_content
+
+            # Check terminal states
+            if result.status == "failed":
+                raise JobFailedError(
+                    f"Job {self.job_id} failed",
+                    job_id=self.job_id,
+                    logs=result.output,
+                )
+            if result.status == "success":
+                return
+
             if time.time() - start > timeout:
                 raise TimeoutError(
                     f"Job {self.job_id} not completed after {timeout}s"
