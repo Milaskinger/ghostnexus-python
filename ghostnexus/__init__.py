@@ -22,12 +22,14 @@ from .exceptions import (
     AuthenticationError,
     InsufficientCreditsError,
     JobFailedError,
+    ValidationError,
     TimeoutError as GNTimeoutError,
 )
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __all__ = [
     "Client",
+    "AsyncClient",
     "Job",
     "JobResult",
     "UserInfo",
@@ -35,5 +37,13 @@ __all__ = [
     "AuthenticationError",
     "InsufficientCreditsError",
     "JobFailedError",
+    "ValidationError",
     "GNTimeoutError",
 ]
+
+
+def __getattr__(name: str):
+    if name == "AsyncClient":
+        from .async_client import AsyncClient
+        return AsyncClient
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
